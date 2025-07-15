@@ -1,12 +1,13 @@
 import axios from "axios";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router";
 import { Link } from "react-router";
 import { z } from "zod";
+import { toast } from "react-toastify";
 
 const schema = z.object({
-  email: z.string().min(1, "Email is required").email("Invalid email"),
-  password: z.string().min(1, "Password is required"),
+  email: z.string().min(1, "Email is required").email("Please enter a valid email address"),
+  password: z.string().min(1, "Password is required").min(6, "Password must be at least 6 characters"),
 });
 
 export default function Login(props) {
@@ -21,6 +22,10 @@ export default function Login(props) {
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+    // Clear general error when user starts typing
+    if (errors.general) {
+      setErrors(prev => ({ ...prev, general: undefined }));
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -29,13 +34,13 @@ export default function Login(props) {
       schema.parse(form);
       setErrors({});
       
-      const res = await axios.post("http://localhost:3000/login", form);
+      const res = await axios.post("http://localhost:5000/api/auth/login", form);
 
-      localStorage.setItem("token", res.data.accessToken);
+      localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
       handleUserLogin(res.data.user)
       
-      alert("Logged in successfully!");
+      toast.success("Logged in successfully!");
       navigate("/");
     } catch (error) {
       if (error.errors) {
@@ -45,9 +50,18 @@ export default function Login(props) {
         }
         setErrors(errorObj);
       } else if (error.response && error.response.data) {
-        alert(error.response.data || "Login failed.");
+        const errorMessage = error.response.data.message;
+        
+        // Handle specific error cases
+        if (errorMessage === 'All fields are required') {
+          setErrors({ general: "Please fill in all fields." });
+        } else if (errorMessage === 'Invalid credentials') {
+          setErrors({ general: "Invalid email or password. Please try again." });
+        } else {
+          setErrors({ general: errorMessage });
+        }
       } else {
-        alert("Something went wrong.");
+        setErrors({ general: "Network error. Please check your connection and try again." });
         console.error("Login error:", error);
       }
     }
@@ -62,6 +76,12 @@ export default function Login(props) {
         <h2 className="text-2xl font-semibold mb-6 text-center text-blue-600">
           Welcome Back!
         </h2>
+        
+        {errors.general && (
+          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+            {errors.general}
+          </div>
+        )}
 
         <div className="flex flex-col gap-2 mb-4">
           <label htmlFor="email" className="text-sm font-medium text-black">
@@ -70,7 +90,8 @@ export default function Login(props) {
           <input
             id="email"
             name="email"
-            type="text"
+            type="email"
+            placeholder="Enter your email address"
             value={form.email}
             onChange={handleChange}
             className="border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-black font-bold"
@@ -88,6 +109,7 @@ export default function Login(props) {
             id="password"
             name="password"
             type="password"
+            placeholder="Enter your password"
             value={form.password}
             onChange={handleChange}
             className="border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-black font-bold"

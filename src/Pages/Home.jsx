@@ -21,7 +21,9 @@ export default function Home(props) {
 
   return (
     <div className="bg-gray-800">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 place-items-center p-4 bg-gray-800">
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4 bg-gray-800">
+
         {posts.map((post) => (
           <Card
             post={post}
@@ -34,7 +36,9 @@ export default function Home(props) {
       </div>
       {user && (
         <button
-          className="btn btn-circle btn-xl text-black bg-blue-700 fixed bottom-2 right-1 flex items-center justify-center text-3xl"
+
+          className="btn btn-circle btn-xl text-black bg-blue-700 fixed bottom-2 right-1 flex items-center justify-center text-3xl leading-none"
+
           onClick={handleAddClick}
         >
           +

@@ -3,10 +3,13 @@ import { useNavigate } from "react-router";
 import axios from "axios";
 import { z } from "zod";
 
+import { toast } from "react-toastify";
+
 const signupSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(1, "Password is required"),
+  name: z.string().min(1, "Name is required").min(2, "Name must be at least 2 characters"),
+  email: z.string().min(1, "Email is required").email("Please enter a valid email address"),
+  password: z.string().min(1, "Password is required").min(6, "Password must be at least 6 characters"),
+
 });
 
 export default function Signup() {
@@ -22,6 +25,12 @@ export default function Signup() {
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+
+    // Clear general error when user starts typing
+    if (errors.general) {
+      setErrors(prev => ({ ...prev, general: undefined }));
+    }
+
   };
 
   const handleSubmit = async (e) => {
@@ -32,13 +41,15 @@ export default function Signup() {
       setErrors({});
 
     
-      await axios.post("http://localhost:3000/register", {
+
+      await axios.post("http://localhost:5000/api/auth/register", {
         name: form.name,
         email: form.email,
         password: form.password,
-      });
+      }      );
 
-      alert("Registered successfully!");
+      toast.success("Registered successfully!");
+
       navigate("/login");
     } catch (err) {
       if (err.name === "ZodError") {
@@ -48,9 +59,20 @@ export default function Signup() {
         });
         setErrors(fieldErrors);
       } else if (err.response && err.response.data) {
-        alert(err.response.data.message || "Registration failed.");
+
+        const errorMessage = err.response.data.message;
+        
+        // Handle specific error cases
+        if (errorMessage === 'All fields are required') {
+          setErrors({ general: "Please fill in all fields." });
+        } else if (errorMessage === 'Email already in use') {
+          setErrors({ general: "This email is already registered. Please use a different email or try logging in." });
+        } else {
+          setErrors({ general: errorMessage });
+        }
       } else {
-        alert("Something went wrong. Please try again.");
+        setErrors({ general: "Network error. Please check your connection and try again." });
+
       }
       console.error("Registration error:", err);
     }
@@ -66,6 +88,14 @@ export default function Signup() {
           Create an Account
         </h2>
 
+        
+        {errors.general && (
+          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+            {errors.general}
+          </div>
+        )}
+
+
         <div className="flex flex-col gap-2 mb-4">
           <label htmlFor="name" className="text-sm font-medium text-black">
             Full Name
@@ -74,6 +104,9 @@ export default function Signup() {
             id="name"
             name="name"
             type="text"
+
+            placeholder="Enter your full name"
+
             value={form.name}
             onChange={handleChange}
             className="border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-black font-bold"
@@ -89,6 +122,9 @@ export default function Signup() {
             id="email"
             name="email"
             type="email"
+
+            placeholder="Enter your email address"
+
             value={form.email}
             onChange={handleChange}
             className="border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-black font-bold"
@@ -106,6 +142,9 @@ export default function Signup() {
             id="password"
             name="password"
             type="password"
+
+            placeholder="Enter your password (min 6 characters)"
+
             value={form.password}
             onChange={handleChange}
             className="border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-black font-bold"

@@ -4,19 +4,22 @@ export default function Card(props) {
   const { post, handleDelete, user, handleEditClick } = props;
 
   return (
-    <div className="card bg-base-100 w-96 shadow-sm h-100 ">
-      <figure className="h-64 w-full overflow-hidden">
+
+    <div className="card bg-base-100 w-96 shadow-sm h-[500px] flex flex-col">
+      <figure className="h-64 w-full overflow-hidden flex-shrink-0">
+
         <img
           className="w-full h-full object-cover"
           src={post.url}
           alt="Shoes"
         />
       </figure>
-      <div className="card-body">
-        <h2 className="card-title">{post.title}</h2>
-        <p>{post.description}</p>
-        <h2>CreatedBy: {post.createdBy}</h2>
-        <div className="card-actions justify-end">
+
+      <div className="card-body flex flex-col flex-1">
+        <h2 className="card-title text-lg font-bold">{post.title}</h2>
+        <p className="flex-1 overflow-y-auto max-h-20">{post.description}</p>
+        <h2 className="text-sm text-gray-600 mt-1">Created by: {post.createdBy}</h2>
+        <div className="card-actions justify-end mt-auto">
           {user?.id === post.userId && (
             <div className="flex gap-2" id="postControllers">
               <button

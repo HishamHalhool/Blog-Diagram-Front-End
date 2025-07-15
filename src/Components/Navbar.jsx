@@ -1,11 +1,16 @@
-import React from "react";
 import { NavLink } from "react-router";
+
+import { toast } from "react-toastify";
+
 
 export default function Navbar({ user, onLogout }) {
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     onLogout();
+
+    toast.info("Logged out successfully!");
+
   };
 
   return (

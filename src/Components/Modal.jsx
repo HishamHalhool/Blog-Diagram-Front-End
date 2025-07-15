@@ -1,5 +1,7 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
+
 
 export default function Modal({
   isOpen,
@@ -39,7 +41,9 @@ export default function Modal({
     try {
       if (modalMode === "add") {
         const res = await axios.post(
-          "http://localhost:3000/posts",
+
+          "http://localhost:5000/api/posts",
+
           {
             ...form,
             userId: user.id,
@@ -52,9 +56,12 @@ export default function Modal({
           }
         );
         handleCreatePost(res.data);
+
+        toast.success("Post created successfully!");
       } else if (modalMode === "edit") {
         const res = await axios.put(
-          `http://localhost:3000/posts/${editPost.id}`,
+          `http://localhost:5000/api/posts/${editPost.id}`,
+
           {
             ...form,
             userId: editPost.userId,
@@ -72,6 +79,9 @@ export default function Modal({
           createdBy: editPost.createdBy,
         };
         handleUpdatePost(updatedPost);
+
+        toast.success("Post updated successfully!");
+
       }
 
       setForm({ title: "", description: "", url: "" });
@@ -81,6 +91,9 @@ export default function Modal({
         "Error submitting form:",
         err.response?.data || err.message
       );
+
+      toast.error(err.response?.data?.message || "Failed to save post. Please try again.");
+
     }
   };
 
