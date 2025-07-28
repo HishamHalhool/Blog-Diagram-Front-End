@@ -42,7 +42,7 @@ export default function Modal({
       if (modalMode === "add") {
         const res = await axios.post(
 
-          "http://localhost:5000/api/posts",
+          `${import.meta.env.VITE_BASE_URL}api/posts`,
 
           {
             ...form,
@@ -60,7 +60,7 @@ export default function Modal({
         toast.success("Post created successfully!");
       } else if (modalMode === "edit") {
         const res = await axios.put(
-          `http://localhost:5000/api/posts/${editPost.id}`,
+          `${import.meta.env.VITE_BASE_URL}api/posts/${editPost.id}`,
 
           {
             ...form,

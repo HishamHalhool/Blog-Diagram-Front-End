@@ -44,7 +44,7 @@ function App() {
     try {
       const token = localStorage.getItem("token");
 
-      await axios.delete(`http://localhost:5000/api/posts/${id}`, {
+      await axios.delete(`${import.meta.env.VITE_BASE_URL}api/posts/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
