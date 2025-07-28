@@ -3,19 +3,17 @@ import { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-
 import "./App.css";
 import Navbar from "./Components/Navbar";
-import { Route, Routes} from "react-router";
+import { Route, Routes } from "react-router";
 import Home from "./Pages/Home";
 import Login from "./Pages/Login";
 import Signup from "./Pages/SignUp";
 import axios from "axios";
 
-
 function App() {
   const [posts, setPosts] = useState([]);
-  
+
   const [user, setUser] = useState(() => {
     const storedUser = localStorage.getItem("user");
     return storedUser ? JSON.parse(storedUser) : null;
@@ -24,16 +22,13 @@ function App() {
   useEffect(() => {
     axios
 
-      .get("http://localhost:5000/api/posts")
+      .get(`${import.meta.env.VITE_BASE_URL}api/posts`)
       .then((res) => setPosts(res.data))
       .catch((err) => {
         console.error("Error fetching data", err);
         toast.error("Failed to load posts. Please refresh the page.");
       });
-
   }, []);
-
-  
 
   const handleCreatePost = (newPost) => {
     setPosts((prev) => [newPost, ...prev]);
@@ -50,7 +45,6 @@ function App() {
       const token = localStorage.getItem("token");
 
       await axios.delete(`http://localhost:5000/api/posts/${id}`, {
-
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -68,11 +62,9 @@ function App() {
     setUser(userData);
   };
 
-
-  const onLogout =()=>{
-    setUser(null)
-  }
-  
+  const onLogout = () => {
+    setUser(null);
+  };
 
   return (
     <>
@@ -109,7 +101,6 @@ function App() {
         pauseOnHover
         theme="light"
       />
-
     </>
   );
 }
