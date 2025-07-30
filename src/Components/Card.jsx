@@ -5,7 +5,7 @@ export default function Card(props) {
 
   return (
 
-    <div className="card bg-base-100 w-96 shadow-sm h-[500px] flex flex-col">
+    <div className="card bg-base-100 w-full max-w-sm shadow-lg h-[500px] flex flex-col hover:shadow-xl transition-shadow duration-300">
       <figure className="h-64 w-full overflow-hidden flex-shrink-0">
 
         <img
@@ -15,18 +15,18 @@ export default function Card(props) {
         />
       </figure>
 
-      <div className="card-body flex flex-col flex-1">
-        <h2 className="card-title text-lg font-bold">{post.title}</h2>
-        <p className="flex-1 overflow-y-auto max-h-20">{post.description}</p>
-        <h2 className="text-sm text-gray-600 mt-1">Created by: {post.createdBy}</h2>
-        <div className="card-actions justify-end mt-auto">
+      <div className="card-body flex flex-col flex-1 p-4">
+        <h2 className="card-title text-lg font-bold mb-2">{post.title}</h2>
+        <p className="flex-1 overflow-y-auto max-h-20 text-sm text-gray-700 leading-relaxed">{post.description}</p>
+        <h2 className="text-sm text-gray-600 mt-2">Created by: {post.createdBy}</h2>
+        <div className="card-actions justify-end mt-auto pt-2">
           {user?.id === post.userId && (
             <div className="flex gap-2" id="postControllers">
               <button
                 onClick={() => {
                   handleEditClick(post);
                 }}
-                className="cursor-pointer btn btn-sm  bg-gray-800"
+                className="cursor-pointer btn btn-sm bg-blue-600 hover:bg-blue-700 transition-colors"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
